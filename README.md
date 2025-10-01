@@ -32,8 +32,8 @@ Sigue estos pasos para tener una copia del proyecto funcionando localmente.
 
 ### 1. Clonar el Repositorio
 ```bash
-git clone [URL_DE_TU_REPOSITORIO]
-cd [NOMBRE_DE_TU_PROYECTO]
+git clone https://github.com/Phanesan/rent-all-backend
+cd rent-all-backend
 ```
 
 ### 2. Instalar Dependencias
@@ -116,3 +116,5 @@ mutation Register($data: CreateUserInput!) {
   "data": {
     "name": "Test User",
     "email": "test@example.com",
+  }
+}
