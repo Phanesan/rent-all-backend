@@ -116,5 +116,17 @@ mutation Register($data: CreateUserInput!) {
   "data": {
     "name": "Test User",
     "email": "test@example.com",
+    "password": "password123"
   }
 }
+```
+
+---
+
+## 📜 Scripts Disponibles
+
+* `npm run start:dev`: Inicia la aplicación en modo desarrollo.
+* `npm run build`: Compila el proyecto para producción.
+* `npm run migration:generate --name=NombreDeLaMigracion`: Genera un nuevo archivo de migración basado en los cambios de las entidades. **(Recuerda ejecutar `npm run build` antes)**.
+* `npm run migration:run`: Aplica todas las migraciones pendientes.
+* `npm run migration:revert`: Revierte la última migración aplicada.
