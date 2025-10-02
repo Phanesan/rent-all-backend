@@ -16,12 +16,73 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type DeleteResponse {
+  message: String!
+  success: Boolean!
+}
+
+input LoginUserInput {
+  email: String!
+  password: String!
+}
+
 type Mutation {
-  registerUser(createUserInput: CreateUserInput!): User!
+  """Permanently deletes a user by ID."""
+  hardDeleteUser(
+    """The unique identifier of the user to be permanently deleted."""
+    id: ID!
+  ): DeleteResponse!
+
+  """Registers a new user in the system."""
+  registerUser(
+    """Data for the new user."""
+    createUserInput: CreateUserInput!
+  ): User!
+
+  """Restores a soft-deleted user by ID."""
+  restoreUser(
+    """The unique identifier of the user to be restored."""
+    id: ID!
+  ): DeleteResponse!
+
+  """Performs a soft delete on a user by ID."""
+  softDeleteUser(
+    """The unique identifier of the user to be soft deleted."""
+    id: ID!
+  ): DeleteResponse!
+
+  """Updates an existing user's information."""
+  updateUser(
+    """Data for updating the user."""
+    updateUserInput: UpdateUserInput!
+  ): User!
 }
 
 type Query {
-  hello: String!
+  """Validates user credentials and returns the user if valid."""
+  login(
+    """User login credentials."""
+    loginUserInput: LoginUserInput!
+  ): User!
+
+  """Finds a single user by ID or email."""
+  user(
+    """The email address of the user."""
+    email: String
+
+    """The unique identifier of the user."""
+    id: ID
+  ): User
+}
+
+input UpdateUserInput {
+  address: String
+  email: String
+  id: ID!
+  name: String
+  password: String
+  phone: String
+  postalCode: String
 }
 
 type User {
