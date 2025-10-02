@@ -27,6 +27,12 @@ type Mutation {
     """Data for the new user."""
     createUserInput: CreateUserInput!
   ): User!
+
+  """Updates an existing user's information."""
+  updateUser(
+    """Data for updating the user."""
+    updateUserInput: UpdateUserInput!
+  ): User!
 }
 
 type Query {
@@ -44,6 +50,16 @@ type Query {
     """The unique identifier of the user."""
     id: ID
   ): User
+}
+
+input UpdateUserInput {
+  address: String
+  email: String
+  id: ID!
+  name: String
+  password: String
+  phone: String
+  postalCode: String
 }
 
 type User {

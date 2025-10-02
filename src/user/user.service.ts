@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
@@ -111,6 +111,46 @@ export class UserService {
     }
 
     return user;
+
+  }
+
+  /**
+   * Actualiza la información de un usuario existente.
+   *
+   * @param updateUserInput - Objeto que contiene los datos a actualizar del usuario, incluyendo el ID.
+   * @returns Una promesa que resuelve con el usuario actualizado.
+   * @throws NotFoundException Si no se encuentra un usuario con el ID proporcionado.
+   * @throws BadRequestException Si el correo electrónico proporcionado ya está en uso por otro usuario.
+   *
+   * Este método primero intenta precargar el usuario a actualizar. Si se proporciona una nueva contraseña,
+   * la encripta antes de guardarla. También verifica que el nuevo correo electrónico no esté en uso por otro usuario.
+   */
+  async update(updateUserInput: UpdateUserInput): Promise<User> {
+
+    const { id, ...updateData } = updateUserInput;
+
+    const userToUpdate = await this.userRepository.preload({
+      id,
+      ...updateData,
+    });
+
+    if (!userToUpdate) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+      userToUpdate.password = updateData.password;
+    }
+
+    if(updateData.email) {
+      const emailExists = await this.userRepository.findOneBy({ email: updateData.email });
+      if(emailExists && emailExists.id !== id) {
+        throw new BadRequestException('Email already in use by another user');
+      }
+    }
+
+    return this.userRepository.save(userToUpdate);
 
   }
 
