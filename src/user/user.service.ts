@@ -1,10 +1,11 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { LoginUserInput } from './dto/login-user.input';
 
 @Injectable()
 export class UserService {
@@ -80,6 +81,33 @@ export class UserService {
 
     if(!user) {
       throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    return user;
+
+  }
+
+  /**
+   * Valida las credenciales de un usuario durante el proceso de inicio de sesión.
+   *
+   * @param loginUserInput - Objeto que contiene el correo electrónico y la contraseña del usuario.
+   * @returns Una promesa que resuelve con el usuario autenticado si las credenciales son válidas.
+   * @throws {UnauthorizedException} Si el usuario no existe o la contraseña es incorrecta.
+   */
+  async validateUser(loginUserInput: LoginUserInput): Promise<User> {
+
+    const {  email, password } = loginUserInput;
+
+    const user = await this.userRepository.findOneBy({ email });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     return user;

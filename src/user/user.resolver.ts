@@ -4,6 +4,7 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { BadRequestException } from '@nestjs/common';
+import { LoginUserInput } from './dto/login-user.input';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -30,6 +31,15 @@ export class UserResolver {
       return this.userService.findOneByEmail(email);
     }
     throw new BadRequestException('You must provide either an ID or an email to find a user.');
+
+  }
+
+  @Query(() => User, { name: 'login', description: 'Validates user credentials and returns the user if valid.' })
+  async login(
+    @Args('loginUserInput', { description: 'User login credentials.' }) loginUserInput: LoginUserInput
+  ): Promise<User> {
+
+    return this.userService.validateUser(loginUserInput);
 
   }
 
