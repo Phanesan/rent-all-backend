@@ -6,8 +6,28 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginUserInput } from './dto/login-user.input';
+import { DeleteResult } from 'typeorm/browser';
 
 @Injectable()
+/**
+ * Servicio encargado de gestionar las operaciones relacionadas con los usuarios.
+ *
+ * Proporciona métodos para crear, buscar, actualizar, eliminar (borrado lógico y físico) y restaurar usuarios en la base de datos.
+ * Incluye validaciones para evitar duplicidad de correos electrónicos, encriptación de contraseñas y manejo de excepciones
+ * para los diferentes escenarios de error (usuario no encontrado, credenciales inválidas, correo ya registrado, etc.).
+ *
+ * Métodos principales:
+ * - `create`: Crea un nuevo usuario, validando que el correo no exista y encriptando la contraseña.
+ * - `findOneById`: Busca un usuario por su ID, lanzando excepción si no existe.
+ * - `findOneByEmail`: Busca un usuario por su correo electrónico, lanzando excepción si no existe.
+ * - `validateUser`: Valida las credenciales de inicio de sesión de un usuario.
+ * - `update`: Actualiza los datos de un usuario, validando unicidad de correo y encriptando la nueva contraseña si se proporciona.
+ * - `softDelete`: Realiza un borrado lógico del usuario (soft delete).
+ * - `restore`: Restaura un usuario previamente eliminado lógicamente.
+ * - `hardDelete`: Elimina físicamente un usuario de la base de datos.
+ *
+ * Todas las operaciones devuelven promesas y manejan las excepciones correspondientes para garantizar la integridad de los datos.
+ */
 export class UserService {
 
   constructor(
@@ -151,6 +171,68 @@ export class UserService {
     }
 
     return this.userRepository.save(userToUpdate);
+
+  }
+
+  /**
+   * Elimina lógicamente un usuario por su ID.
+   * 
+   * Esta función realiza un borrado suave (soft delete) del usuario especificado,
+   * marcándolo como eliminado sin eliminar físicamente el registro de la base de datos.
+   * 
+   * @param id - El identificador único del usuario a eliminar lógicamente.
+   * @returns Un objeto que indica si la operación fue exitosa.
+   * @throws NotFoundException Si no se encuentra un usuario con el ID proporcionado.
+   */
+  async softDelete(id: string): Promise<{success: boolean; message: string}> {
+
+    const result: DeleteResult = await this.userRepository.softDelete(id);
+
+    if(result.affected === 0) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return { success: true, message: `User with ID ${id} has been soft deleted` };
+
+  }
+
+  /**
+   * Restaura un usuario previamente eliminado (soft delete) por su ID.
+   *
+   * @param id - El identificador único del usuario a restaurar.
+   * @returns Un objeto que indica si la operación fue exitosa.
+   * @throws NotFoundException Si el usuario con el ID proporcionado no existe o no está eliminado.
+   */
+  async restore(id: string): Promise<{success: boolean; message: string}> {
+
+    const result: DeleteResult = await this.userRepository.restore(id);
+
+    if(result.affected === 0) {
+      throw new NotFoundException(`User with ID ${id} not found or is not deleted`);
+    }
+
+    return { success: true, message: `User with ID ${id} has been restored` };
+
+  }
+
+  /**
+   * Elimina de forma permanente un usuario de la base de datos según su ID.
+   *
+   * @param id - El identificador único del usuario a eliminar.
+   * @returns Un objeto que indica si la operación fue exitosa.
+   * @throws NotFoundException Si no se encuentra un usuario con el ID proporcionado.
+   */
+  async hardDelete(id: string): Promise<{success: boolean; message: string}> {
+
+    const user = await this.userRepository.findOneBy({ id });
+
+    if(!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    await this.userRepository.delete(id);
+
+    return { success: true, message: `User with ID ${id} has been hard deleted` };
 
   }
 
