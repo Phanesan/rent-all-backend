@@ -21,6 +21,13 @@ type DeleteResponse {
   success: Boolean!
 }
 
+type FileUploadResponse {
+  message: String
+  path: String
+  success: Boolean!
+  url: String
+}
+
 input LoginUserInput {
   email: String!
   password: String!
@@ -56,6 +63,8 @@ type Mutation {
     """Data for updating the user."""
     updateUserInput: UpdateUserInput!
   ): User!
+  uploadFile(file: Upload!): FileUploadResponse!
+  uploadFiles(files: [Upload!]!): [FileUploadResponse!]!
 }
 
 type Query {
@@ -84,6 +93,9 @@ input UpdateUserInput {
   phone: String
   postalCode: String
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 type User {
   address: String
