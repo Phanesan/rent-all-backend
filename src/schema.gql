@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CreateItemInput {
+  description: String!
+  name: String!
+}
+
 input CreateUserInput {
   address: String
   email: String!
@@ -21,12 +26,42 @@ type DeleteResponse {
   success: Boolean!
 }
 
+type FileUploadResponse {
+  message: String
+  path: String
+  success: Boolean!
+  url: String
+}
+
+type Image {
+  createdAt: DateTime!
+  id: ID!
+  item: Item!
+  updatedAt: DateTime!
+  url: String!
+}
+
+type Item {
+  createdAt: DateTime!
+  description: String!
+  id: ID!
+  images: [Image!]
+  isRented: Boolean!
+  name: String!
+  rentals: [Rental!]
+  updatedAt: DateTime!
+  user: User!
+}
+
 input LoginUserInput {
   email: String!
   password: String!
 }
 
 type Mutation {
+  addImages(files: [Upload!]!, itemId: String!): [Image!]!
+  createItem(createItemInput: CreateItemInput!): Item!
+
   """Permanently deletes a user by ID."""
   hardDeleteUser(
     """The unique identifier of the user to be permanently deleted."""
@@ -38,6 +73,7 @@ type Mutation {
     """Data for the new user."""
     createUserInput: CreateUserInput!
   ): User!
+  removeItem(id: ID!): Item!
 
   """Restores a soft-deleted user by ID."""
   restoreUser(
@@ -50,15 +86,21 @@ type Mutation {
     """The unique identifier of the user to be soft deleted."""
     id: ID!
   ): DeleteResponse!
+  updateItem(id: ID!, updateItemInput: UpdateItemInput!): Item!
 
   """Updates an existing user's information."""
   updateUser(
     """Data for updating the user."""
     updateUserInput: UpdateUserInput!
   ): User!
+  uploadFile(file: Upload!): FileUploadResponse!
+  uploadFiles(files: [Upload!]!): [FileUploadResponse!]!
 }
 
 type Query {
+  item(id: ID!): Item!
+  items: [Item!]!
+
   """Validates user credentials and returns the user if valid."""
   login(
     """User login credentials."""
@@ -75,6 +117,21 @@ type Query {
   ): User
 }
 
+type Rental {
+  createdAt: DateTime!
+  endDate: DateTime!
+  id: ID!
+  item: Item!
+  startDate: DateTime!
+  user: User!
+}
+
+input UpdateItemInput {
+  description: String
+  isRented: Boolean
+  name: String
+}
+
 input UpdateUserInput {
   address: String
   email: String
@@ -85,13 +142,18 @@ input UpdateUserInput {
   postalCode: String
 }
 
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
 type User {
   address: String
   createdAt: DateTime!
   email: String!
   id: ID!
+  items: [Item!]
   name: String!
   phone: String!
   postalCode: String
+  rentals: [Rental!]
   updatedAt: DateTime!
 }

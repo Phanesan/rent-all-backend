@@ -16,6 +16,10 @@ import { AppResolver } from './app.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from 'data-source';
 import { UserModule } from './user/user.module';
+import { StorageModule } from './storage/storage.module';
+import { ItemModule } from './item/item.module';
+import { RentalModule } from './rental/rental.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -41,6 +45,10 @@ import { UserModule } from './user/user.module';
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
+    StorageModule,
+    ItemModule,
+    RentalModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
