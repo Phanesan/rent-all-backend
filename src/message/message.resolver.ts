@@ -1,4 +1,4 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation, ID, Int } from '@nestjs/graphql';
 import { MessageService } from './message.service';
 import { Message } from './entities/message.entity';
 import { CreateMessageInput } from './dto/create-message.input';
@@ -15,8 +15,12 @@ export class MessageResolver {
   }
 
   @Query(() => [Message], { name: 'messagesByUser' })
-  findAllByUser(@Args('userId', { type: () => String }) userId: string) {
-    return this.messageService.findAllByUser(userId);
+  findAllByUser(
+    @Args('userId', { type: () => ID }) userId: string,
+    @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
+    @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
+  ) {
+    return this.messageService.findAllByUser(userId, page, limit);
   }
 }
 

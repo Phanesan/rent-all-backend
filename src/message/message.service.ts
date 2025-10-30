@@ -16,12 +16,26 @@ export class MessageService {
     return this.messageRepository.save(newMessage);
   }
 
-  async findAllByUser(userId: string): Promise<Message[]> {
+  async findAllByUser(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<Message[]> {
+    if (limit === 0) {
+      return this.messageRepository.find({
+        where: [{ senderId: userId }, { receiverId: userId }],
+        order: {
+          timestamp: 'ASC',
+        },
+      });
+    }
     return this.messageRepository.find({
       where: [{ senderId: userId }, { receiverId: userId }],
       order: {
         timestamp: 'ASC',
       },
+      take: limit,
+      skip: (page - 1) * limit,
     });
   }
 }
