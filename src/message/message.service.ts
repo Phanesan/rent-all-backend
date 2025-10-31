@@ -20,22 +20,25 @@ export class MessageService {
     userId: string,
     page: number,
     limit: number,
+    receiverId?: string,
   ): Promise<Message[]> {
-    if (limit === 0) {
-      return this.messageRepository.find({
-        where: [{ senderId: userId }, { receiverId: userId }],
-        order: {
-          timestamp: 'ASC',
-        },
-      });
-    }
-    return this.messageRepository.find({
-      where: [{ senderId: userId }, { receiverId: userId }],
+    const queryOptions: any = {
+      where: receiverId
+        ? [
+            { senderId: userId, receiverId: receiverId },
+            { senderId: receiverId, receiverId: userId },
+          ]
+        : [{ senderId: userId }, { receiverId: userId }],
       order: {
-        timestamp: 'ASC',
+        timestamp: 'DESC',
       },
-      take: limit,
-      skip: (page - 1) * limit,
-    });
+    };
+
+    if (limit !== 0) {
+      queryOptions.take = limit;
+      queryOptions.skip = (page - 1) * limit;
+    }
+
+    return this.messageRepository.find(queryOptions);
   }
 }

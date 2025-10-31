@@ -17,10 +17,11 @@ export class MessageResolver {
   @Query(() => [Message], { name: 'messagesByUser' })
   findAllByUser(
     @Args('userId', { type: () => ID }) userId: string,
-    @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
-    @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
+    @Args('page', { type: () => Int, nullable: true, defaultValue: 1 }) page: number,
+    @Args('limit', { type: () => Int, nullable: true, defaultValue: 15 }) limit: number,
+    @Args('receiverId', { type: () => ID, nullable: true }) receiverId?: string,
   ) {
-    return this.messageService.findAllByUser(userId, page, limit);
+    return this.messageService.findAllByUser(userId, page, limit, receiverId);
   }
 }
 
