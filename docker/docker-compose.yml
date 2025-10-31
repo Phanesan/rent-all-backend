@@ -24,8 +24,7 @@ services:
 
     networks:
       - rentall-network
-      
-    # Define los volúmenes para la persistencia de datos
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -53,6 +52,40 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile.dev
+    container_name: rentall_backend
+    restart: unless-stopped
+
+    environment:
+      - DEV_MODE=${DEV_MODE}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_PORT=${MINIO_PORT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_USE_SSL=${MINIO_USE_SSL}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
+    ports:
+      - "3000:3000"
+    volumes:
+      # Monta el código fuente para reflejar cambios en tiempo real (hot-reloading)
+      - ../:/usr/src/app
+      # Evita que la carpeta node_modules local sobreescriba la del contenedor
+      - /usr/src/app/node_modules
+    networks:
+      - rentall-network
+    depends_on:
+      - db
+      - minio
+
 
   adminer:
     image: adminer
