@@ -75,13 +75,6 @@ services:
       - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
     ports:
       - "3000:3000"
-    volumes:
-      # Monta el código fuente para reflejar cambios en tiempo real (hot-reloading)
-      - ../src:/usr/src/app/src
-      # Monta la carpeta dist para que los archivos compilados persistan
-      - ../dist:/usr/src/app/dist
-      # Evita que la carpeta node_modules local sobreescriba la del contenedor
-      - /usr/src/app/node_modules
     networks:
       - rentall-network
     depends_on:
