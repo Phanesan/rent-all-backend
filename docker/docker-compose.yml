@@ -55,7 +55,7 @@ services:
 
   backend:
     build:
-      context: ..
+      context: ../
       dockerfile: Dockerfile.dev
     container_name: rentall_backend
     restart: unless-stopped
@@ -77,7 +77,7 @@ services:
       - "3000:3000"
     volumes:
       # Monta el código fuente para reflejar cambios en tiempo real (hot-reloading)
-      - ../:/usr/src/app
+      - ../src:/usr/src/app/src
       # Evita que la carpeta node_modules local sobreescriba la del contenedor
       - /usr/src/app/node_modules
     networks:
