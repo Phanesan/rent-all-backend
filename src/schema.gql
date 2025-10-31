@@ -7,6 +7,12 @@ input CreateItemInput {
   name: String!
 }
 
+input CreateMessageInput {
+  content: String!
+  receiverId: String!
+  senderId: String!
+}
+
 input CreateUserInput {
   address: String
   email: String!
@@ -58,9 +64,19 @@ input LoginUserInput {
   password: String!
 }
 
+"""Represents a single message between two users"""
+type Message {
+  content: String!
+  id: ID!
+  receiver: User!
+  sender: User!
+  timestamp: DateTime!
+}
+
 type Mutation {
   addImages(files: [Upload!]!, itemId: String!): [Image!]!
   createItem(createItemInput: CreateItemInput!): Item!
+  createMessage(createMessageInput: CreateMessageInput!): Message!
 
   """Permanently deletes a user by ID."""
   hardDeleteUser(
@@ -106,6 +122,7 @@ type Query {
     """User login credentials."""
     loginUserInput: LoginUserInput!
   ): User!
+  messagesByUser(limit: Int = 15, page: Int = 1, receiverId: ID, userId: ID!): [Message!]!
 
   """Finds a single user by ID or email."""
   user(
