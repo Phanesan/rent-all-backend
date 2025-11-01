@@ -1,0 +1,16 @@
+# .github/workflows/deploy.yml
+
+name: Desplegar en Portainer
+
+# Se activa cada vez que se hace un push a la rama 'master'
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al Webhook de Portainer
+        run: curl -X POST ${{ secrets.PORTAINER_STACK_WEBHOOK }}
