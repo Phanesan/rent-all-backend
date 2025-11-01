@@ -13,4 +13,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Llamar al Webhook de Portainer
-        run: curl -X POST ${{ secrets.PORTAINER_STACK_WEBHOOK }}
+        run: curl -X POST ${{ secrets.PORTAINER_WEBHOOK_URL }}
