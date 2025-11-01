@@ -20,6 +20,7 @@ import { StorageModule } from './storage/storage.module';
 import { ItemModule } from './item/item.module';
 import { RentalModule } from './rental/rental.module';
 import { ImageModule } from './image/image.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { ImageModule } from './image/image.module';
     ItemModule,
     RentalModule,
     ImageModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
