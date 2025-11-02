@@ -3,6 +3,7 @@ version: '3.8'
 networks:
   rentall-network:
     driver: bridge
+    name: rentall-network
 
 services:
   db:
