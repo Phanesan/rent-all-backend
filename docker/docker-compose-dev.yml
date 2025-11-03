@@ -21,7 +21,7 @@ services:
     # Mapea los puertos -> "[PUERTO_EN_TU_MAQUINA]:[PUERTO_EN_EL_CONTENEDOR]"
     # Esto expone el servicio a la red local en el puerto 5432
     ports:
-      - "6000:6000"
+      - "6000:5432"
 
     networks:
       - rentall-network-beta
