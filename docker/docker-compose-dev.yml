@@ -89,7 +89,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - "6010:6010"
+      - "6010:8080"
     
     networks:
       - rentall-network-beta
