@@ -21,7 +21,7 @@ services:
     # Mapea los puertos -> "[PUERTO_EN_TU_MAQUINA]:[PUERTO_EN_EL_CONTENEDOR]"
     # Esto expone el servicio a la red local en el puerto 5432
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - "6000:6000"
 
     networks:
       - rentall-network-beta
@@ -38,12 +38,12 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
     ports:
       # Puerto para la API de MinIO
-      - "${MINIO_PORT}:${MINIO_PORT}"
+      - "6001:6001"
       # Puerto para la consola web de MinIO
       - "6002:6002"
     volumes:
       - minio_data:/data
-    command: server /data --console-address ":6002"
+    command: server /data --address ":6001" --console-address ":6002"
 
     networks:
       - rentall-network-beta
@@ -62,6 +62,7 @@ services:
     restart: unless-stopped
 
     environment:
+      - PORT=${PORT}
       - DEV_MODE=${DEV_MODE}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
