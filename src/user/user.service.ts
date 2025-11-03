@@ -108,6 +108,22 @@ export class UserService {
   }
 
   /**
+   * Retorna una lista paginada de usuarios del sistema.
+   * @param limit - El número de usuarios a retornar por página.
+   * @param page - El número de página a retornar.
+   * @returns Una promesa que resuelve con una lista de usuarios.
+   */
+  async findAll(limit: number, page: number): Promise<User[]> {
+
+    return this.userRepository.find({
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+
+  }
+
+
+  /**
    * Valida las credenciales de un usuario durante el proceso de inicio de sesión.
    *
    * @param loginUserInput - Objeto que contiene el correo electrónico y la contraseña del usuario.
