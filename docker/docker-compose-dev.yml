@@ -1,7 +1,7 @@
 version: '3.8'
 
 networks:
-  rentall-network:
+  rentall-network-beta:
     driver: bridge
     name: rentall-network-beta
 
