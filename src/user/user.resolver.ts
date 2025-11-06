@@ -55,6 +55,23 @@ export class UserResolver {
 
   }
 
+    /**
+   * Consulta para obtener una lista paginada de usuarios.
+   * @param limit El número máximo de usuarios a devolver.
+   * @param page El número de página a recuperar.
+   * @returns Una lista de usuarios.
+   */
+  @Query(() => [User], { name: 'users', description: 'Returns a list of all users.' })
+  async findAll(
+    @Args('limit', { type: () => Int, defaultValue: 10, description: 'The maximum number of users to return.' }) limit: number,
+    @Args('page', { type: () => Int, defaultValue: 1, description: 'The page number to retrieve.' }) page: number,
+  ): Promise<User[]> {
+
+    return this.userService.findAll(limit, page);
+
+  }
+
+
   /**
    * Consulta para validar las credenciales de un usuario y realizar el login.
    * @param loginUserInput Credenciales de login del usuario (email y contraseña).

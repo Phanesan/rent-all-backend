@@ -1,0 +1,99 @@
+version: '3.8'
+
+networks:
+  rentall-network-beta:
+    driver: bridge
+    name: rentall-network-beta
+
+services:
+  db:
+    image: postgres:16-alpine
+    
+    container_name: postgres_db_beta
+    
+    restart: unless-stopped
+    
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: rentall_db
+      PGPORT: 6000
+    
+    # Mapea los puertos -> "[PUERTO_EN_TU_MAQUINA]:[PUERTO_EN_EL_CONTENEDOR]"
+    # Esto expone el servicio a la red local en el puerto 5432
+    ports:
+      - "6000:6000"
+
+    networks:
+      - rentall-network-beta
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio:latest
+    container_name: storage_minio_beta
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    ports:
+      # Puerto para la API de MinIO
+      - "6001:6001"
+      # Puerto para la consola web de MinIO
+      - "6002:6002"
+    volumes:
+      - minio_data:/data
+    command: server /data --address ":6001" --console-address ":6002"
+
+    networks:
+      - rentall-network-beta
+
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  backend:
+    build:
+      context: ../
+      dockerfile: Dockerfile.dev
+    container_name: rentall_backend_beta
+    restart: unless-stopped
+
+    environment:
+      - PORT=${PORT}
+      - DEV_MODE=${DEV_MODE}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_PORT=${MINIO_PORT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_USE_SSL=${MINIO_USE_SSL}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - rentall-network-beta
+    depends_on:
+      - db
+      - minio
+
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "6010:8080"
+    
+    networks:
+      - rentall-network-beta
+      
+volumes:
+  postgres_data:
+  minio_data:
