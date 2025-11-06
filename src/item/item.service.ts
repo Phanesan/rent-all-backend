@@ -37,13 +37,15 @@ export class ItemService {
 
   }
 
-  async update(id: string, updateItemInput: UpdateItemInput): Promise<Item> {
+  async update(updateItemInput: UpdateItemInput): Promise<Item> {
 
-    await this.itemRepository.update(id, updateItemInput);
+    const { id } = updateItemInput;
+
     const updatedItem = await this.itemRepository.findOneBy({ id });
     if (!updatedItem) {
       throw new NotFoundException(`Item with ID "${id}" not found`);
     }
+    await this.itemRepository.update(id, updateItemInput);
     return updatedItem;
 
   }
