@@ -63,6 +63,8 @@ services:
 
     environment:
       - DEV_MODE=${DEV_MODE}
+      - PORT=${PORT}
+      - URL_BASE=${URL_BASE}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_USERNAME=${DB_USERNAME}

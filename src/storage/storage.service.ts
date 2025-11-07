@@ -72,7 +72,7 @@ export class StorageService {
   ): Promise<{ path: string; url: string }> {
     const { createReadStream, filename, mimetype } = file;
 
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'];
+    const allowedMimeTypes = ['image/jpeg', 'image/png'];
     if (!allowedMimeTypes.includes(mimetype)) {
       throw new HttpException(
         `[${mimetype}] Tipo de archivo no soportado. Tipos permitidos: ${allowedMimeTypes.join(', ')}`,
@@ -100,9 +100,9 @@ export class StorageService {
         metaData,
       );
 
-      const url = `http://${this.configService.get<string>(
-        'MINIO_ENDPOINT',
-      )}:${this.configService.get<string>('MINIO_PORT')}/${this.bucketName}/${fileName}`;
+      const url = `https://files.${this.configService.get<string>(
+        'URL_BASE',
+      )}/${this.bucketName}/${fileName}`;
 
       return {
         path: fileName,
