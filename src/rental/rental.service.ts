@@ -10,5 +10,20 @@ export class RentalService {
     private readonly rentalRepository: Repository<Rental>,
   ) {}
 
-  // Basic CRUD methods for Rental can be added here later
+  async checkAvailability(
+    itemId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<{ available: boolean }> {
+    const rentals = await this.rentalRepository.find({
+      where: { item: { id: itemId } },
+    });
+
+    const isOverlap = rentals.some(
+      (rental) =>
+        startDate < rental.endDate && endDate > rental.startDate,
+    );
+
+    return { available: !isOverlap };
+  }
 }

@@ -22,7 +22,7 @@ export class Rental {
 
   @ManyToOne(() => User, (user) => user.rentals)
   @Field(() => User)
-  user: User; // User who rents the item
+  user: User;
 
   @Column()
   @Field()
