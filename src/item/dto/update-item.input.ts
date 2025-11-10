@@ -25,7 +25,7 @@ export class UpdateItemInput extends PartialType(CreateItemInput) {
   @IsArray()
   imageIds?: string[];
 
-  @Field({ nullable: true })
+  @Field(() => [ID], { nullable: true })
   @IsArray()
   rentalIds?: string[];
 }
