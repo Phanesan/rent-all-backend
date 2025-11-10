@@ -1,4 +1,4 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, ID } from '@nestjs/graphql';
 import { IsArray, IsString, IsNotEmpty } from 'class-validator';
 
 @InputType()
@@ -13,5 +13,12 @@ export class CreateItemInput {
   @IsNotEmpty()
   description: string;
 
+  @Field(() => ID)
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
 
+  @Field(() => [ID], { nullable: true })
+  @IsArray()
+  imageIds?: string[];
 }
